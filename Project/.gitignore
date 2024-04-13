@@ -1,0 +1,35 @@
+.settings/
+bin/
+tmp/
+.metadata
+.classpath
+.project
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.loadpath
+.factorypath
+
+#####################
+## java
+####################
+.mtj.tmp/
+*.classpath*.jar
+*.war
+*.ear
+*.nar
+hs_err_pid*
+
+####################
+## Class Specifics 
+#####################
+
+config.*
+*.log
+*.confi
+
+.vscode
+sources.txt
+*.class
