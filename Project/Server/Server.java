@@ -1,4 +1,4 @@
-package Project;
+package Project.Server;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -7,7 +7,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class Server {
+public enum Server {
+    INSTANCE;
     int port = 3001;
     // connected clients
     // private List<ServerThread> clients = new ArrayList<ServerThread>();
@@ -21,7 +22,8 @@ public class Server {
             Socket incoming_client = null;
             System.out.println("Server is listening on port " + port);
             // Reference server statically
-            Room.server = this;// all rooms will have the same reference
+            //Updated to using a single pattern for Server( and Client)
+            //Room.server = this;// all rooms will have the same reference
             // create a lobby on start
             lobby = new Room("Lobby");
             rooms.add(lobby);
@@ -29,10 +31,11 @@ public class Server {
                 System.out.println("waiting for next client");
                 if (incoming_client != null) {
                     System.out.println("Client connected");
-                    ServerThread sClient = new ServerThread(incoming_client, lobby);
+                    ServerThread sClient = new ServerThread(incoming_client); /*lobby*/
+                    lobby.addClient(sClient);
                     sClient.start();
 
-                    joinRoom("lobby", sClient);
+                    //joinRoom("lobby", sClient);
                     incoming_client = null;
 
                 }
@@ -86,6 +89,40 @@ public class Server {
         return false;
     }
 
+
+    /**
+     * Gets a result of rooms similar to the search string, up to 10
+     * @param searchString
+     * @return
+     */
+    protected synchronized List<String> listRooms(String searchString){
+            return listRooms(searchString,10);
+    }
+    /**
+     * Gets a result of rooms similar to the search string, between 1-100 results
+     * @param searchString
+     * @param limit
+     * @return
+     */
+    protected synchronized List<String> listRooms(String searchString, int limit){
+       //TODO
+        if( limit < 1 || limit > 100){
+                return null;
+        }
+        List<String> matchRooms = new ArrayList<String>();
+        Iterator <Room> iter = rooms.iterator();
+        while (iter.hasNext() || matchRooms.size() < limit){
+            Room currentRoom = iter.next();
+            // if we do not have a particular search, simply add the room
+            if(searchString == null || searchString.isBlank()){
+                matchRooms.add(currentRoom.getName());
+            }// if we have a particular search and the room name is like the search string, add the room
+            else if(currentRoom.getName().toLowerCase().contains(searchString.toLowerCase())){
+                matchRooms.add(currentRoom.getName());
+            }
+        }
+        return matchRooms; 
+    }
     /***
      * Attempts to create a room with given name if it doesn't exist already.
      * 
@@ -134,7 +171,7 @@ public class Server {
 
     public static void main(String[] args) {
         System.out.println("Starting Server");
-        Server server = new Server();
+        Server server = Server.INSTANCE;
         int port = 3000;
         try {
             port = Integer.parseInt(args[0]);
