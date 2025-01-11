@@ -1,0 +1,1 @@
+The Chatroom Application is a real-time messaging platform that allows multiple users to communicate with one another in a shared environment. This project demonstrates core concepts of networking, concurrency, and GUI development. The application is designed to simulate the functionality of a basic chatroom, enabling users to join, send, and receive messages in real-time.
